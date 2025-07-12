@@ -115,8 +115,9 @@
             background-color: #593a28;
         }
 
-        input:disabled,
-        button:disabled {
+        /* New CSS for disabled state with not-allowed cursor */
+        button:disabled,
+        input:disabled {
             cursor: not-allowed;
             opacity: 0.7;
         }
@@ -216,7 +217,6 @@
             updateCart();
         }
 
-        // New function to increase quantity
         function increaseQuantity(name) {
             const item = cart.find(item => item.name === name);
             if (item) {
@@ -226,13 +226,12 @@
             }
         }
 
-        // New function to decrease quantity
         function decreaseQuantity(name) {
             const item = cart.find(item => item.name === name);
             if (item) {
                 item.quantity -= 1;
                 if (item.quantity <= 0) {
-                    removeFromCart(name); // Remove item if quantity is zero or less
+                    removeFromCart(name);
                 } else {
                     item.total = item.quantity * item.price;
                     updateCart();
@@ -262,13 +261,38 @@
                 cartContent += '<hr><strong>Total: RM' + total.toFixed(2) + '</strong>';
             }
             document.getElementById('cart').innerHTML = cartContent;
+            // Ensure buttons are enabled when cart is updated, unless form is being submitted
+            if (!document.getElementById("submitBtn").disabled) {
+                toggleAllButtonsAndInputs(false);
+            }
         }
 
-        function disableForm(state) {
-            document.getElementById("name").disabled = state;
-            document.getElementById("email").disabled = state;
-            document.getElementById("submitBtn").disabled = state;
-            document.getElementById("submitBtn").textContent = state ? "Sending..." : "Send Your Order";
+        // --- NEW FUNCTION: Toogle all buttons and inputs ---
+        function toggleAllButtonsAndInputs(disableState) {
+            // Disable/Enable Add to Cart buttons
+            document.querySelectorAll('.menu-item button').forEach(button => {
+                button.disabled = disableState;
+            });
+
+            // Disable/Enable Quantity buttons and Remove buttons in the cart
+            document.querySelectorAll('.cart-item button').forEach(button => {
+                button.disabled = disableState;
+            });
+
+            // Disable/Enable Name and Email input fields
+            document.getElementById("name").disabled = disableState;
+            document.getElementById("email").disabled = disableState;
+
+            // Disable/Enable Submit button and change its text
+            const submitBtn = document.getElementById("submitBtn");
+            submitBtn.disabled = disableState;
+            submitBtn.textContent = disableState ? "Sending Order..." : "Send Your Order";
+
+            // If disabling, change cursor for the entire body
+            document.body.style.cursor = disableState ? "not-allowed" : "default";
+
+            // Additionally, add/remove a class to the body for specific styles if needed
+            // document.body.classList.toggle('submitting-order', disableState);
         }
 
         function submitOrder() {
@@ -277,7 +301,8 @@
                 return;
             }
 
-            disableForm(true);
+            // --- IMPORTANT: Disable all buttons and inputs BEFORE sending ---
+            toggleAllButtonsAndInputs(true);
 
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
@@ -299,19 +324,24 @@
             .then(data => {
                 alert("Your order has been accepted by the store!");
                 document.getElementById("form").reset();
-                cart = []; // Clear the cart array
-                updateCart(); // Update the display to show an empty cart
-                disableForm(false);
+                cart = [];
+                updateCart();
+                // --- Re-enable all buttons and inputs AFTER successful submission ---
+                toggleAllButtonsAndInputs(false);
             })
             .catch(error => {
                 console.error("Error submitting order:", error);
                 alert("Ralat semasa menghantar tempahan. Sila cuba semula.");
-                disableForm(false);
+                // --- Re-enable all buttons and inputs if there's an error ---
+                toggleAllButtonsAndInputs(false);
             });
         }
 
-
-        document.addEventListener('DOMContentLoaded', updateCart);
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCart();
+            // Ensure all buttons/inputs are enabled when page loads, in case of refresh during submission
+            toggleAllButtonsAndInputs(false);
+        });
     </script>
 </head>
 <body>
