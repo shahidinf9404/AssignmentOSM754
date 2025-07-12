@@ -16,51 +16,51 @@
             min-height: 100vh;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif; 
-            line-height: 1.6; 
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
         }
 
-        
+
         @media screen and (max-width: 768px) {
             body {
                 background-image: url('background.png');
                 background-position: top center;
-                background-attachment: scroll; 
+                background-attachment: scroll;
             }
 
             h1 {
-                font-size: 2.5em; 
+                font-size: 2.5em;
             }
 
             h3 {
-                font-size: 1.5em; 
+                font-size: 1.5em;
             }
 
             .menu-item {
-                width: calc(50% - 20px); 
-                max-width: 250px; 
-                margin-bottom: 20px; 
+                width: calc(50% - 20px);
+                max-width: 250px;
+                margin-bottom: 20px;
             }
 
             .menu-item img {
-                width: 80px; 
+                width: 80px;
                 height: 80px;
             }
 
             #cart, form {
-                margin: 20px 10px; 
-                padding: 10px; 
+                margin: 20px 10px;
+                padding: 10px;
             }
 
             input {
-                width: calc(100% - 20px); 
+                width: calc(100% - 20px);
             }
         }
 
         /* Further narrow for very small screens */
         @media screen and (max-width: 480px) {
             .menu-item {
-                width: calc(100% - 20px); 
+                width: calc(100% - 20px);
             }
         }
 
@@ -114,11 +114,11 @@
         button:hover {
             background-color: #593a28;
         }
-        
+
         input:disabled,
         button:disabled {
             cursor: not-allowed;
-            opacity: 0.7; 
+            opacity: 0.7;
         }
 
         #cart {
@@ -138,12 +138,38 @@
             margin-bottom: 8px;
         }
 
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Spacing between buttons and quantity */
+        }
+
+        .quantity-btn {
+            background-color: #4CAF50; /* Green for plus button */
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 0; /* Override default button margin */
+        }
+
+        .quantity-btn.minus {
+            background-color: #f44336; /* Red for minus button */
+        }
+
+        .quantity-btn:hover {
+            opacity: 0.8;
+        }
+
         .remove-btn {
             background: none;
             color: red;
             font-size: 18px;
             border: none;
             cursor: pointer;
+            margin-left: 10px; /* Space from quantity buttons */
         }
 
         form {
@@ -168,7 +194,7 @@
             border: 1px solid #ccc;
             font-size: 16px;
             margin-bottom: 10px;
-            box-sizing: border-box; 
+            box-sizing: border-box;
         }
     </style>
     <script>
@@ -190,17 +216,46 @@
             updateCart();
         }
 
+        // New function to increase quantity
+        function increaseQuantity(name) {
+            const item = cart.find(item => item.name === name);
+            if (item) {
+                item.quantity += 1;
+                item.total = item.quantity * item.price;
+                updateCart();
+            }
+        }
+
+        // New function to decrease quantity
+        function decreaseQuantity(name) {
+            const item = cart.find(item => item.name === name);
+            if (item) {
+                item.quantity -= 1;
+                if (item.quantity <= 0) {
+                    removeFromCart(name); // Remove item if quantity is zero or less
+                } else {
+                    item.total = item.quantity * item.price;
+                    updateCart();
+                }
+            }
+        }
+
         function updateCart() {
             let cartContent = '';
             let total = 0;
             if (cart.length === 0) {
-                cartContent = '<p>Your cart is empty.</p>'; 
+                cartContent = '<p>Your cart is empty.</p>';
             } else {
                 cart.forEach(item => {
                     cartContent += `
                         <div class="cart-item">
-                            ${item.name} x ${item.quantity} - RM${item.total.toFixed(2)}
-                            <button class="remove-btn" onclick="removeFromCart('${item.name}')">&times;</button>
+                            <div>${item.name} - RM${item.price.toFixed(2)}</div>
+                            <div class="cart-item-controls">
+                                <button class="quantity-btn minus" onclick="decreaseQuantity('${item.name}')">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="quantity-btn" onclick="increaseQuantity('${item.name}')">+</button>
+                                <button class="remove-btn" onclick="removeFromCart('${item.name}')">&times;</button>
+                            </div>
                         </div>`;
                     total += item.total;
                 });
@@ -213,13 +268,13 @@
             document.getElementById("name").disabled = state;
             document.getElementById("email").disabled = state;
             document.getElementById("submitBtn").disabled = state;
-            document.getElementById("submitBtn").textContent = state ? "Sending..." : "Hantar Tempahan";
+            document.getElementById("submitBtn").textContent = state ? "Sending..." : "Send Your Order";
         }
 
         function submitOrder() {
             if (cart.length === 0) {
                 alert("Your cart is empty. Please add items before submitting an order.");
-                return; 
+                return;
             }
 
             disableForm(true);
@@ -244,19 +299,18 @@
             .then(data => {
                 alert("Your order has been accepted by the store!");
                 document.getElementById("form").reset();
-                document.getElementById("cart").innerHTML = '';
-                cart = [];
-                updateCart(); 
+                cart = []; // Clear the cart array
+                updateCart(); // Update the display to show an empty cart
                 disableForm(false);
             })
             .catch(error => {
-                console.error("Error submitting order:", error); 
+                console.error("Error submitting order:", error);
                 alert("Ralat semasa menghantar tempahan. Sila cuba semula.");
                 disableForm(false);
             });
         }
 
-        
+
         document.addEventListener('DOMContentLoaded', updateCart);
     </script>
 </head>
@@ -273,7 +327,7 @@
             <strong>Cappucino</strong><br>RM14<br>
             <button onclick="addToCart('Cappucino', 14)">Add to Cart</button>
         </div>
-           <div class="menu-item">
+            <div class="menu-item">
             <img src="2.jpg" alt="Matcha Latte"><br>
             <strong>Matcha Latte</strong><br> RM12<br>
             <button onclick="addToCart('Matcha Latte', 12)">Add to Cart</button>
@@ -290,14 +344,14 @@
             <strong>Iced Spanish Latte</strong><br> RM13<br>
             <button onclick="addToCart('Iced Spanish Latte', 13)">Add to Cart</button>
         </div>
-         <div class="menu-item">
+           <div class="menu-item">
             <img src="8.jpg" alt="Iced matcha green tea"><br>
             <strong>Iced matcha green tea</strong><br> RM12<br>
             <button onclick="addToCart('Iced matcha green tea', 12)">Add to Cart</button>
         </div>
     </div>
     <div class="menu-container">
-         <div class="menu-item">
+           <div class="menu-item">
             <img src="5.jpg" alt="Mocha Frappuccino"><br>
             <strong>Mocha Frappuccino</strong><br> RM12<br>
             <button onclick="addToCart('Mocha Frappuccino', 12)">Add to Cart</button>
@@ -307,7 +361,7 @@
             <strong>Java Chip Frappuccino</strong><br> RM13<br>
             <button onclick="addToCart('Java Chip Frappuccino', 13)">Add to Cart</button>
         </div>
-          <div class="menu-item">
+            <div class="menu-item">
             <img src="9.jpg" alt="Green Tea Frappuccino"><br>
             <strong>Green Tea Frappuccino</strong><br> RM12<br>
             <button onclick="addToCart('Green Tea Frappuccino', 12)">Add to Cart</button>
