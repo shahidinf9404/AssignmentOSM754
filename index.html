@@ -20,7 +20,6 @@
             line-height: 1.6;
         }
 
-
         @media screen and (max-width: 768px) {
             body {
                 background-image: url('background.jpg');
@@ -55,15 +54,20 @@
             input {
                 width: calc(100% - 20px);
             }
+
+            .back-button { 
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
         }
 
-        
         @media screen and (max-width: 480px) {
             .menu-item {
                 width: calc(100% - 20px);
             }
         }
-
 
         h1, h3 {
             text-align: center;
@@ -115,7 +119,6 @@
             background-color: #593a28;
         }
 
-        
         button:disabled,
         input:disabled {
             cursor: not-allowed;
@@ -142,22 +145,22 @@
         .cart-item-controls {
             display: flex;
             align-items: center;
-            gap: 5px; /* Spacing between buttons and quantity */
+            gap: 5px; 
         }
 
         .quantity-btn {
-            background-color: #4CAF50; /* Green for plus button */
+            background-color: #4CAF50; 
             color: white;
             border: none;
             padding: 4px 8px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
-            margin-top: 0; /* Override default button margin */
+            margin-top: 0; 
         }
 
         .quantity-btn.minus {
-            background-color: #f44336; /* Red for minus button */
+            background-color: #f44336; 
         }
 
         .quantity-btn:hover {
@@ -170,7 +173,7 @@
             font-size: 18px;
             border: none;
             cursor: pointer;
-            margin-left: 10px; /* Space from quantity buttons */
+            margin-left: 10px; 
         }
 
         form {
@@ -196,6 +199,25 @@
             font-size: 16px;
             margin-bottom: 10px;
             box-sizing: border-box;
+        }
+
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #fd5d33;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            z-index: 1000; 
+        }
+
+        .back-button:hover {
+            background-color: #593a28;
         }
     </style>
     <script>
@@ -261,38 +283,37 @@
                 cartContent += '<hr><strong>Total: RM' + total.toFixed(2) + '</strong>';
             }
             document.getElementById('cart').innerHTML = cartContent;
-            // Ensure buttons are enabled when cart is updated, unless form is being submitted
+    
             if (!document.getElementById("submitBtn").disabled) {
                 toggleAllButtonsAndInputs(false);
             }
         }
 
-        // --- NEW FUNCTION: Toogle all buttons and inputs ---
+        
         function toggleAllButtonsAndInputs(disableState) {
-            // Disable/Enable Add to Cart buttons
+          
             document.querySelectorAll('.menu-item button').forEach(button => {
                 button.disabled = disableState;
             });
 
-            // Disable/Enable Quantity buttons and Remove buttons in the cart
+         
             document.querySelectorAll('.cart-item button').forEach(button => {
                 button.disabled = disableState;
             });
 
-            // Disable/Enable Name and Email input fields
+        
             document.getElementById("name").disabled = disableState;
             document.getElementById("email").disabled = disableState;
 
-            // Disable/Enable Submit button and change its text
+            
             const submitBtn = document.getElementById("submitBtn");
             submitBtn.disabled = disableState;
             submitBtn.textContent = disableState ? "Sending Order..." : "Send Your Order";
 
-            // If disabling, change cursor for the entire body
+            
             document.body.style.cursor = disableState ? "not-allowed" : "default";
 
-            // Additionally, add/remove a class to the body for specific styles if needed
-            // document.body.classList.toggle('submitting-order', disableState);
+         
         }
 
         function submitOrder() {
@@ -301,7 +322,7 @@
                 return;
             }
 
-            // --- IMPORTANT: Disable all buttons and inputs BEFORE sending ---
+            
             toggleAllButtonsAndInputs(true);
 
             const name = document.getElementById('name').value;
@@ -326,26 +347,26 @@
                 document.getElementById("form").reset();
                 cart = [];
                 updateCart();
-                // --- Re-enable all buttons and inputs AFTER successful submission ---
+               
                 toggleAllButtonsAndInputs(false);
             })
             .catch(error => {
                 console.error("Error submitting order:", error);
                 alert("Ralat semasa menghantar tempahan. Sila cuba semula.");
-                // --- Re-enable all buttons and inputs if there's an error ---
+             
                 toggleAllButtonsAndInputs(false);
             });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             updateCart();
-            // Ensure all buttons/inputs are enabled when page loads, in case of refresh during submission
+
             toggleAllButtonsAndInputs(false);
         });
     </script>
 </head>
 <body>
-    <h1>Daily Dose Coffee</h1>
+    <a href="https://www.canva.com/design/DAGsOmLbQXE/zX-nuOxq8ONs74sdi62MWA/view?mode=prototype" class="back-button">&#8592; Back</a> <h1>Daily Dose Coffee</h1>
     <div class="menu-container">
         <div class="menu-item">
             <img src="1.jpg" alt="Caffe Americano"><br>
