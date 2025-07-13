@@ -20,6 +20,7 @@
             line-height: 1.6;
         }
 
+        
         @media screen and (max-width: 768px) {
             body {
                 background-image: url('background.jpg');
@@ -53,13 +54,6 @@
 
             input {
                 width: calc(100% - 20px);
-            }
-
-            .back-button { 
-                top: 10px;
-                left: 10px;
-                padding: 8px 12px;
-                font-size: 0.9em;
             }
         }
 
@@ -201,7 +195,7 @@
             box-sizing: border-box;
         }
 
-        
+       
         .back-button {
             position: absolute;
             top: 20px;
@@ -214,10 +208,30 @@
             font-weight: bold;
             transition: background-color 0.2s;
             z-index: 1000; 
+            font-size: 1em; 
         }
 
         .back-button:hover {
             background-color: #593a28;
+        }
+
+     
+        @media screen and (max-width: 768px) {
+            .back-button {
+                top: 15px;
+                left: 15px;
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .back-button {
+                top: 10px;
+                left: 10px;
+                padding: 7px 10px;
+                font-size: 0.8em;
+            }
         }
     </style>
     <script>
@@ -283,7 +297,7 @@
                 cartContent += '<hr><strong>Total: RM' + total.toFixed(2) + '</strong>';
             }
             document.getElementById('cart').innerHTML = cartContent;
-    
+           
             if (!document.getElementById("submitBtn").disabled) {
                 toggleAllButtonsAndInputs(false);
             }
@@ -291,17 +305,17 @@
 
         
         function toggleAllButtonsAndInputs(disableState) {
-          
+            
             document.querySelectorAll('.menu-item button').forEach(button => {
                 button.disabled = disableState;
             });
 
-         
+            
             document.querySelectorAll('.cart-item button').forEach(button => {
                 button.disabled = disableState;
             });
 
-        
+            
             document.getElementById("name").disabled = disableState;
             document.getElementById("email").disabled = disableState;
 
@@ -312,8 +326,6 @@
 
             
             document.body.style.cursor = disableState ? "not-allowed" : "default";
-
-         
         }
 
         function submitOrder() {
@@ -322,7 +334,7 @@
                 return;
             }
 
-            
+           
             toggleAllButtonsAndInputs(true);
 
             const name = document.getElementById('name').value;
@@ -347,26 +359,26 @@
                 document.getElementById("form").reset();
                 cart = [];
                 updateCart();
-               
+                
                 toggleAllButtonsAndInputs(false);
             })
             .catch(error => {
                 console.error("Error submitting order:", error);
                 alert("Ralat semasa menghantar tempahan. Sila cuba semula.");
-             
+                
                 toggleAllButtonsAndInputs(false);
             });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             updateCart();
-
+            
             toggleAllButtonsAndInputs(false);
         });
     </script>
 </head>
 <body>
-    <a href="https://www.canva.com/design/DAGsOmLbQXE/zX-nuOxq8ONs74sdi62MWA/view?mode=prototype" class="back-button">&#8592; Back</a> <h1>Daily Dose Coffee</h1>
+    <a href="URL_ANDA" class="back-button">&#8592; Back</a> <h1>Daily Dose Coffee</h1>
     <div class="menu-container">
         <div class="menu-item">
             <img src="1.jpg" alt="Caffe Americano"><br>
