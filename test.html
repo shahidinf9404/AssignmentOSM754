@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Dose Coffee</title>
+    <link rel="icon" type="image/png" href="Logo.png">
+    <style>
+        body {
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-color: #f0f0f0;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Category Tabs Styling */
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap; /* Allows tabs to wrap on smaller screens */
+            gap: 10px; /* Space between tabs */
+        }
+
+        .category-tab {
+            background-color: #593a28; /* Darker brown for tabs */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s, transform 0.2s;
+            font-size: 1.1em;
+            flex: 1; /* Allows tabs to grow and shrink */
+            min-width: 120px; /* Minimum width for each tab */
+            max-width: 180px; /* Maximum width for each tab */
+            text-align: center;
+        }
+
+        .category-tab:hover {
+            background-color: #fd5d33; /* Orange on hover */
+            transform: translateY(-2px);
+        }
+
+        .category-tab.active {
+            background-color: #fd5d33; /* Orange for active tab */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(-2-px);
+        }
+
+        @media screen and (max-width: 768px) {
+            body {
+                background-image: url('background.jpg');
+                background-position: top center;
+                background-attachment: scroll;
+            }
+
+            h1 {
+                font-size: 2.5em;
+            }
+
+            h3 {
+                font-size: 1.5em;
+            }
+
+            .menu-item {
+                width: calc(50% - 20px);
+                max-width: 250px;
+                margin-bottom: 20px;
+            }
+
+            .menu-item img {
+                width: 80px;
+                height: 80px;
+            }
+
+            #cart, form {
+                margin: 20px 10px;
+                padding: 10px;
+            }
+
+            input {
+                width: calc(100% - 20px);
+            }
+
+            .category-tab {
+                font-size: 0.9em;
+                padding: 10px 15px;
+                min-width: 100px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .menu-item {
+                width: calc(100% - 20px);
+            }
+            .category-tab {
+                font-size: 0.8em;
+                padding: 8px 12px;
+                min-width: 80px;
+            }
+        }
+
+        h1, h3 {
+            text-align: center;
+            color: #4b2e18;
+            margin-top: 20px;
+        }
+
+        .menu-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+
+        .menu-item {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 15px;
+            text-align: center;
+            width: 200px;
+            transition: transform 0.2s;
+        }
+
+        .menu-item:hover {
+            transform: scale(1.05);
+        }
+
+        .menu-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        /* Specific styling for bean images to show full picture */
+        .menu-item img.bean-image {
+            object-fit: contain; /* Ensures the whole image is visible */
+            border-radius: 0;    /* Removes the circular crop */
+        }
+
+        button {
+            background-color: #fd5d33;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #593a28;
+        }
+
+        button:disabled,
+        input:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #cart {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px; 
+        }
+
+        .quantity-btn {
+            background-color: #4CAF50; 
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 0; 
+        }
+
+        .quantity-btn.minus {
+            background-color: #f44336; 
+        }
+
+        .quantity-btn:hover {
+            opacity: 0.8;
+        }
+
+        .remove-btn {
+            background: none;
+            color: red;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px; 
+        }
+
+        form {
+            background: #fff;
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            margin-top: 15px;
+        }
+
+        input {
+            width: 95%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #fd5d33;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            z-index: 1000; 
+            font-size: 1em; 
+        }
+
+        .back-button:hover {
+            background-color: #593a28;
+        }
+
+        @media screen and (max-width: 768px) {
+            .back-button {
+                top: 15px;
+                left: 15px;
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .back-button {
+                top: 10px;
+                left: 10px;
+                padding: 7px 10px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+    <script>
+        let cart = [];
+
+        function addToCart(name, price) {
+            const existing = cart.find(item => item.name === name);
+            if (existing) {
+                existing.quantity += 1;
+                existing.total = existing.quantity * price;
+            } else {
+                cart.push({ name, price, quantity: 1, total: price });
+            }
+            updateCart();
+        }
+
+        function removeFromCart(name) {
+            cart = cart.filter(item => item.name !== name);
+            updateCart();
+        }
+
+        function increaseQuantity(name) {
+            const item = cart.find(item => item.name === name);
+            if (item) {
+                item.quantity += 1;
+                item.total = item.quantity * item.price;
+                updateCart();
+            }
+        }
+
+        function decreaseQuantity(name) {
+            const item = cart.find(item => item.name === name);
+            if (item) {
+                item.quantity -= 1;
+                if (item.quantity <= 0) {
+                    removeFromCart(name);
+                } else {
+                    item.total = item.quantity * item.price;
+                    updateCart();
+                }
+            }
+        }
+
+        function updateCart() {
+            let cartContent = '';
+            let total = 0;
+            if (cart.length === 0) {
+                cartContent = '<p>Your cart is empty.</p>';
+            } else {
+                cart.forEach(item => {
+                    cartContent += `
+                        <div class="cart-item">
+                            <div>${item.name} - RM${item.price.toFixed(2)}</div>
+                            <div class="cart-item-controls">
+                                <button class="quantity-btn minus" onclick="decreaseQuantity('${item.name}')">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="quantity-btn" onclick="increaseQuantity('${item.name}')">+</button>
+                                <button class="remove-btn" onclick="removeFromCart('${item.name}')">&times;</button>
+                            </div>
+                        </div>`;
+                    total += item.total;
+                });
+                cartContent += '<hr><strong>Total: RM' + total.toFixed(2) + '</strong>';
+            }
+            document.getElementById('cart').innerHTML = cartContent;
+            
+            if (!document.getElementById("submitBtn").disabled) {
+                toggleAllButtonsAndInputs(false);
+            }
+        }
+
+        function toggleAllButtonsAndInputs(disableState) {
+            // Disable/enable menu item buttons
+            document.querySelectorAll('.menu-item button').forEach(button => {
+                button.disabled = disableState;
+            });
+
+            // Disable/enable cart item buttons
+            document.querySelectorAll('.cart-item button').forEach(button => {
+                button.disabled = disableState;
+            });
+
+            // Disable/enable form inputs
+            document.getElementById("name").disabled = disableState;
+            document.getElementById("email").disabled = disableState;
+
+            // Disable/enable submit button and change text
+            const submitBtn = document.getElementById("submitBtn");
+            submitBtn.disabled = disableState;
+            submitBtn.textContent = disableState ? "Sending Order..." : "Send Your Order";
+
+            // Change cursor
+            document.body.style.cursor = disableState ? "not-allowed" : "default";
+
+            // Disable/enable category tabs
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.disabled = disableState;
+            });
+        }
+
+        function submitOrder() {
+            if (cart.length === 0) {
+                alert("Your cart is empty. Please add items before submitting an order.");
+                return;
+            }
+
+            toggleAllButtonsAndInputs(true);
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const timestamp = new Date().toLocaleString();
+            const orderDetails = cart.map(item => `${item.name} x ${item.quantity}`).join(', ');
+            const total = cart.reduce((sum, item) => sum + item.total, 0);
+
+            fetch("https://script.google.com/macros/s/AKfycby3YgfU9dM3_5i69y1IAaGSy0xh0nzNBKlhImmbbtMjcHoFRM4HUkb8TnzuWLjVZTTz-w/exec", {
+                method: "POST",
+                body: JSON.stringify({
+                    name,
+                    email,
+                    timestamp,
+                    order: orderDetails,
+                    total
+                })
+            })
+            .then(res => res.text())
+            .then(data => {
+                alert("Your order has been accepted by the store!");
+                document.getElementById("form").reset();
+                cart = [];
+                updateCart();
+                
+                toggleAllButtonsAndInputs(false);
+            })
+            .catch(error => {
+                console.error("Error submitting order:", error);
+                alert("Ralat semasa menghantar tempahan. Sila cuba semula.");
+                
+                toggleAllButtonsAndInputs(false);
+            });
+        }
+
+        // Function to display selected category
+        function showCategory(categoryName) {
+            // Hide all category containers
+            document.querySelectorAll('.category-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show the selected category container
+            document.getElementById(categoryName).style.display = 'flex'; // Use flex for menu-container layout
+
+            // Update active tab styling
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(`tab-${categoryName}`).classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCart();
+            toggleAllButtonsAndInputs(false);
+            // Show the 'hot' category by default when the page loads
+            showCategory('hot'); 
+        });
+    </script>
+</head>
+<body>
+    <a href="https://www.canva.com/design/DAGsOmLbQXE/zX-nuOxq8ONs74sdi62MWA/view?mode=prototype" class="back-button">&#8592; Back</a> 
+    <br>
+    <h1>Daily Dose Coffee</h1>
+
+    <div class="category-tabs">
+        <button class="category-tab" id="tab-hot" onclick="showCategory('hot')">Hot</button>
+        <button class="category-tab" id="tab-cold" onclick="showCategory('cold')">Cold</button>
+        <button class="category-tab" id="tab-frappe" onclick="showCategory('frappe')">Frappe</button>
+        <button class="category-tab" id="tab-beans" onclick="showCategory('beans')">Beans</button>
+        <button class="category-tab" id="tab-merchandise" onclick="showCategory('merchandise')">Merchandise</button>
+    </div>
+
+    <div id="hot" class="category-section menu-container">
+        <div class="menu-item">
+            <img src="1.jpg" alt="Caffe Americano"><br>
+            <strong>Caffe Americano</strong><br> RM12<br>
+            <button onclick="addToCart('Caffe Americano', 12)">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="3.jpg" alt="Cappucino"><br>
+            <strong>Cappucino</strong><br>RM14<br>
+            <button onclick="addToCart('Cappucino', 14)">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="2.jpg" alt="Matcha Latte"><br>
+            <strong>Matcha Latte</strong><br> RM12<br>
+            <button onclick="addToCart('Matcha Latte', 12)">Add to Cart</button>
+        </div>
+    </div>
+
+    <div id="cold" class="category-section menu-container" style="display:none;">
+        <div class="menu-item">
+            <img src="6.jpg" alt="Iced Chocolate"><br>
+            <strong>Iced Chocolate</strong><br> RM12<br>
+            <button onclick="addToCart('Iced Chocolate', 12)">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="7.jpg" alt="Iced Spanish Latte"><br>
+            <strong>Iced Spanish Latte</strong><br> RM13<br>
+            <button onclick="addToCart('Iced Spanish Latte', 13)">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="8.jpg" alt="Iced Matcha Green Tea"><br>
+            <strong>Iced Matcha Green Tea</strong><br> RM12<br>
+            <button onclick="addToCart('Iced Matcha Green Tea', 12)">Add to Cart</button>
+        </div>
+    </div>
+
+    <div id="frappe" class="category-section menu-container" style="display:none;">
+        <div class="menu-item">
+            <img src="5.jpg" alt="Mocha Frappuccino"><br>
+            <strong>Mocha Frappuccino</strong><br> RM12<br>
+            <button onclick="addToCart('Mocha Frappuccino', 12)">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="10.jpg" alt="Java Chip Frappuccino"><br>
+            <strong>Java Chip Frappuccino</strong><br> RM13<br>
+            <button onclick="addToCart('Java Chip Frappuccino', 13)">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="9.jpg" alt="Green Tea Frappuccino"><br>
+            <strong>Green Tea Frappuccino</strong><br> RM12<br>
+            <button onclick="addToCart('Green Tea Frappuccino', 12)">Add to Cart</button>
+        </div>
+    </div>
+
+    <div id="beans" class="category-section menu-container" style="display:none;">
+        <div class="menu-item">
+            <img src="beans1.png" alt="Arabica Beans" class="bean-image"><br>
+            <strong>Arabica Beans (250g)</strong><br> RM35<br>
+            <button onclick="addToCart('Arabica Beans (250g)', 35)">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="beans2.png" alt="Robusta Beans" class="bean-image"><br>
+            <strong>Robusta Beans (250g) - Single Origin</strong><br> RM30<br>
+            <button onclick="addToCart('Robusta Beans (250g) - Single Origin', 30)">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="beans3.png" alt="Robusta Beans Bold Roast" class="bean-image"><br>
+            <strong>Robusta Beans (250g) - Bold Roast</strong><br> RM30<br>
+            <button onclick="addToCart('Robusta Beans (250g) - Bold Roast', 30)">Add to Cart</button>
+        </div>
+    </div>
+
+    <div id="merchandise" class="category-section menu-container" style="display:none;">
+        <div class="menu-item">
+            <img src="mug.jpg" alt="Coffee Mug"><br>
+            <strong>Daily Dose Mug</strong><br> RM25<br>
+            <button onclick="addToCart('Daily Dose Mug', 25)">Add to Cart</button>
+        </div>
+        <div class="menu-item">
+            <img src="tshirt.jpg" alt="T-Shirt"><br>
+            <strong>Daily Dose T-Shirt</strong><br> RM45<br>
+            <button onclick="addToCart('Daily Dose T-Shirt', 45)">Add to Cart</button>
+        </div>
+    </div>
+
+
+    <div id="cart"></div>
+    <form id="form" onsubmit="event.preventDefault(); submitOrder();">
+        <h3>Your Details</h3>
+        <label for="name">Your Name on The Cup:</label>
+        <input type="text" id="name" required>
+
+        <label for="email">Your Email:</label>
+        <input type="email" id="email" required>
+
+        <button type="submit" id="submitBtn">Send Your Order</button>
+    </form>
+</body>
+</html>
