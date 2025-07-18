@@ -44,6 +44,7 @@
             min-width: 120px; /* Minimum width for each tab */
             max-width: 180px; /* Maximum width for each tab */
             text-align: center;
+            text-decoration: none; /* Remove underline for anchor tags */
         }
 
         .category-tab:hover {
@@ -432,20 +433,46 @@
             });
 
             // Show the selected category container
-            document.getElementById(categoryName).style.display = 'flex'; // Use flex for menu-container layout
+            const selectedCategory = document.getElementById(categoryName);
+            if (selectedCategory) {
+                selectedCategory.style.display = 'flex'; // Use flex for menu-container layout
+            } else {
+                // Default to 'hot' if an invalid hash is provided
+                document.getElementById('hot').style.display = 'flex';
+                categoryName = 'hot'; 
+            }
 
             // Update active tab styling
             document.querySelectorAll('.category-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            document.getElementById(`tab-${categoryName}`).classList.add('active');
+            const activeTab = document.getElementById(`tab-${categoryName}`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            } else {
+                // Ensure the default tab is active if an invalid hash was given
+                document.getElementById('tab-hot').classList.add('active');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             updateCart();
             toggleAllButtonsAndInputs(false);
-            // Show the 'hot' category by default when the page loads
-            showCategory('hot'); 
+
+            // Check for a hash in the URL on page load
+            const initialHash = window.location.hash.substring(1); // Remove the '#'
+            if (initialHash) {
+                showCategory(initialHash);
+            } else {
+                // If no hash, default to 'hot' category
+                showCategory('hot'); 
+            }
+
+            // Listen for hash changes (e.g., when navigating using browser back/forward buttons)
+            window.addEventListener('hashchange', () => {
+                const newHash = window.location.hash.substring(1);
+                showCategory(newHash);
+            });
         });
     </script>
 </head>
@@ -455,18 +482,18 @@
     <h1>Daily Dose Coffee</h1>
 
     <div class="category-tabs">
-        <button class="category-tab" id="tab-hot" onclick="showCategory('hot')">Hot</button>
-        <button class="category-tab" id="tab-cold" onclick="showCategory('cold')">Cold</button>
-        <button class="category-tab" id="tab-frappe" onclick="showCategory('frappe')">Frappe</button>
-        <button class="category-tab" id="tab-beans" onclick="showCategory('beans')">Beans</button>
-        <button class="category-tab" id="tab-merchandise" onclick="showCategory('merchandise')">Merchandise</button>
+        <a href="#hot" class="category-tab" id="tab-hot">Hot</a>
+        <a href="#cold" class="category-tab" id="tab-cold">Cold</a>
+        <a href="#frappe" class="category-tab" id="tab-frappe">Frappe</a>
+        <a href="#beans" class="category-tab" id="tab-beans">Beans</a>
+        <a href="#merchandise" class="category-tab" id="tab-merchandise">Merchandise</a>
     </div>
 
     <div id="hot" class="category-section menu-container">
         <div class="menu-item">
             <img src="1.jpg" alt="Caffe Americano"><br>
-            <strong>Caffe Americano</strong><br> RM12<br>
-            <button onclick="addToCart('Caffe Americano', 12)">Add to Cart</button>
+            <strong>Caffe Americano</strong><br> RM9.90<br>
+            <button onclick="addToCart('Caffe Americano', 9.90)">Add to Cart</button>
         </div>
         <div class="menu-item">
             <img src="3.jpg" alt="Cappucino"><br>
@@ -528,9 +555,9 @@
             <button onclick="addToCart('Robusta Beans (250g) - Single Origin', 30)">Add to Cart</button>
         </div>
         <div class="menu-item">
-            <img src="beans3.png" alt="Robusta Beans Bold Roast" class="bean-image"><br>
-            <strong>Robusta Beans (250g) - Bold Roast</strong><br> RM30<br>
-            <button onclick="addToCart('Robusta Beans (250g) - Bold Roast', 30)">Add to Cart</button>
+            <img src="beans3.png" alt="Daily Beans Bold Roast" class="bean-image"><br>
+            <strong>Daily Beans (250g) - Bold Roast</strong><br> RM30<br>
+            <button onclick="addToCart('Daily Beans (250g) - Bold Roast', 30)">Add to Cart</button>
         </div>
     </div>
 
@@ -546,7 +573,6 @@
             <button onclick="addToCart('Daily Dose T-Shirt', 45)">Add to Cart</button>
         </div>
     </div>
-
 
     <div id="cart"></div>
     <form id="form" onsubmit="event.preventDefault(); submitOrder();">
